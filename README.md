@@ -6,4 +6,4 @@ The second harmonic in the field of wavelength modulation spectroscopy is of cri
  
 Conventionally, lock-in amplifier is used to demodulate the second harmonic, and it requires reference signal, which is very inconvenient. 
 
-The paper presents a method to demodulate the second harmonic without reference signal. As no reference signal is required, the proposed method benefits second harmonic demodulation with convenient operation and efficiency.
+We presents a method to demodulate the second harmonic without reference signal. As no reference signal is required, the proposed method benefits second harmonic demodulation with convenient operation and efficiency.
