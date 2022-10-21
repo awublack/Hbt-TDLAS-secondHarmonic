@@ -51,10 +51,10 @@ fft_buffer((0.8*fre>f | f>1.2*fre)&(1.9997*fre>f | f>2.0003*fre)& ...
 I=ifft(fft_buffer);     % band-pass filtered signal of It, Only the 1f,2f component is retained
 z1=abs(hilbert(I));     % envelope of I
 fft_buffer=fft(z1-movmean(z1,ave));
-fft_buffer((0.9997*fre>f | f>1.0003*fre)&((fs-1.0003*fre)>f | f>(fs-0.9997*fre)))=0;
+fft_buffer((0.8*fre>f | f>1.2*fre)&((fs-1.2*fre)>f | f>(fs-0.8*fre)))=0;
 z1f=ifft(fft_buffer);   % 1f component of z1
-Ht2=abs(hilbert(z1f));  % Second harmonic demodulation based on Hilbert transform
 
+Ht2=abs(hilbert(z1f));  % Second harmonic demodulation based on Hilbert transform
 H2=LIA(It,fs,2*fre,fre);% Second harmonic demodulated by lock-in amplification
 
 error=Ht2-H2;
@@ -155,17 +155,9 @@ set(gcf,"Position",[100 100 1120-60 420]);
         'FontSize',12,'FontName','Times New Roman','FontWeight','bold');
     xlim(xLim);ylim(yLim);
 
-function [out]=LIA(fcn,fs,fre,filter) %lock-in amplification
-    % [output]=LIA(input,sampling_frequency,reference_frequency,cutoff_frequency)
-    t=(1:size(fcn))'/fs;
-    ave=round(fs/filter);
-    sinw=sin(2*pi*fre*t);
-    cosw=cos(2*pi*fre*t);
-    mixs=sinw.*fcn;
-    mixc=cosw.*fcn;
-    outdcs=movmean(movmean(mixs,ave),ave);
-    outdcc=movmean(movmean(mixc,ave),ave);
-    out=2*sqrt(outdcc.^2+outdcs.^2);
-    out(1:ave)=out(ave+1);
-    out(end-ave+1:end)=out(end-ave);
-end
+figure();
+plot(t1,error(L1),'LineWidth',1,'Color','#2486b9');
+xlim([0,0.05]);ylim([-6e-8,7e-8]);
+xlabel("Time (s)");ylabel('Error (a.u.)');
+% title('Error between HT based method and LIA');
+set(gca,'FontSize',16,'FontName','Times New Roman','FontWeight','bold');
