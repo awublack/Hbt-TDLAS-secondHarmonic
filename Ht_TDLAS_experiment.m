@@ -91,17 +91,17 @@ function [out]=LIAlp(fcn,fs,fre) %lock-in amplification
     mixs=sinw.*fcn;
     mixc=cosw.*fcn;
     
-    fft_tap=fft(mixs);
-    fft_tap(1000<f & f<fs-1000)=0;
-    outdcs=ifft(fft_tap);
+    fft_tem=fft(mixs);
+    fft_tem(1000<f & f<fs-1000)=0;
+    outdcs=ifft(fft_tem);
     
-    fft_tap=fft(mixc);
-    fft_tap(1000<f & f<fs-1000)=0;
-    outdcc=ifft(fft_tap);
+    fft_tem=fft(mixc);
+    fft_tem(1000<f & f<fs-1000)=0;
+    outdcc=ifft(fft_tem);
     
     out=2*sqrt(outdcc.^2+outdcs.^2);
     
-    fft_tap=fft(out);
-    fft_tap(1000<f & f<fs-1000)=0;
-    out=ifft(fft_tap);
+    fft_tem=fft(out);
+    fft_tem(1000<f & f<fs-1000)=0;
+    out=ifft(fft_tem);
 end
