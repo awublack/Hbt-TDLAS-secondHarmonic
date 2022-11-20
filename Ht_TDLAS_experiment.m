@@ -1,8 +1,6 @@
 clear
 
-im=readmatrix('experiment_data.csv','Range','B3:C6000003');% experiment data
-
-It=im(:,2);                 % transmitted light
+It=readmatrix('experiment_data.csv','Range','C3:C6000003');% transmitted light
 
 fs=25e6;                    % sampling frequency
 fre=21e3;                   % modulation frequency
@@ -17,20 +15,18 @@ H2=LIAlp(It,fs,2*fre);  % Second harmonic demodulated by lock-in amplification
 ave=round(fs/fre);
 
 I=It-movmean(movmean(movmean(It,1.1*ave),1.1*ave),1.1*ave);
-fft_buffer=fft(I);
-fft_buffer((0.8869*fre>f | f>1.1131*fre)&(1.8869*fre>f | f>2.1131*fre)& ...
-    ((fs-1.1131*fre)>f | f>(fs-0.8869*fre))&((fs-2.1131*fre)>f | f>(fs-1.8869*fre)))=0;
-I=ifft(fft_buffer);     % band-pass filtered signal of It, Only the 1f,2f component is retained
-z1=abs(hilbert(I));     % envelope of I
-fft_buffer=fft(z1);
-fft_buffer((0.8869*fre>f | f>1.1131*fre)&((fs-1.1131*fre)>f | f>(fs-0.8869*fre)))=0;
-z1f=ifft(fft_buffer);   % 1f component of z1
+fft_tem=fft(I);
+fft_tem((0.5*fre>f | f>2.5*fre)& ...
+    ((f>(fs-0.5*fre))|((fs-2.5*fre)>f)))=0;
+I=ifft(fft_tem);     % band-pass filtered signal of It, Only the 1f,2f component is retained
+z1=abs(hilbert(I));  % the envelope of I
+fft_tem=fft(z1);
+fft_tem((0.8*fre>f | f>1.2*fre)&((fs-1.2*fre)>f | f>(fs-0.8*fre)))=0;
+z1f=ifft(fft_tem);   % the 1f component of z1
 Ht2=abs(hilbert(z1f));  
-fft_buffer=fft(Ht2);
-fft_buffer((f>1000)&((fs-1000)>f))=0;
-Ht2=ifft(fft_buffer);   % Second harmonic demodulation based on Hilbert transform
-
-
+fft_tem=fft(Ht2);
+fft_tem((f>1000)&((fs-1000)>f))=0;
+Ht2=ifft(fft_tem);   % second harmonic demodulation based on Hilbert transform
 
 %% Plot
 t=t-0.0518554;
@@ -95,17 +91,17 @@ function [out]=LIAlp(fcn,fs,fre) %lock-in amplification
     mixs=sinw.*fcn;
     mixc=cosw.*fcn;
     
-    fft_buffer=fft(mixs);
-    fft_buffer(1000<f & f<fs-1000)=0;
-    outdcs=ifft(fft_buffer);
+    fft_tap=fft(mixs);
+    fft_tap(1000<f & f<fs-1000)=0;
+    outdcs=ifft(fft_tap);
     
-    fft_buffer=fft(mixc);
-    fft_buffer(1000<f & f<fs-1000)=0;
-    outdcc=ifft(fft_buffer);
+    fft_tap=fft(mixc);
+    fft_tap(1000<f & f<fs-1000)=0;
+    outdcc=ifft(fft_tap);
     
     out=2*sqrt(outdcc.^2+outdcs.^2);
     
-    fft_buffer=fft(out);
-    fft_buffer(1000<f & f<fs-1000)=0;
-    out=ifft(fft_buffer);
+    fft_tap=fft(out);
+    fft_tap(1000<f & f<fs-1000)=0;
+    out=ifft(fft_tap);
 end
